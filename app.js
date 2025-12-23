@@ -1,7 +1,7 @@
 const sampleConversations = [
   {
-    name: 'Product Leads',
-    message: 'Reminder: roadmap review starts in 20 minutes.',
+    name: 'Fam',
+    message: 'Cant wait to see you this summer',
     time: '09:15',
     unread: 3,
     color: '#60a5fa',
