@@ -247,8 +247,30 @@ const renderSummaryPoints = (items = [], targetId) => {
   node.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
 };
 
+const tabLabels = {
+  loops: 'Loops',
+  todo: 'To do',
+  feed: 'Feed',
+  settings: 'Settings',
+};
+
+let activeTab = 'loops';
 let currentView = 'list'; // list | thread | media
 let currentConversation = null;
+
+const setActiveTab = (tab = 'loops') => {
+  activeTab = tab;
+  const tabButtons = document.querySelectorAll('.tab-item');
+  tabButtons.forEach((btn) => {
+    const isActive = btn.dataset.tab === tab;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+  const topTitle = document.getElementById('top-title');
+  if (currentView === 'list' && topTitle) {
+    topTitle.textContent = tabLabels[tab] || 'Messages';
+  }
+};
 
 const setView = (view) => {
   currentView = view;
@@ -264,9 +286,12 @@ const setView = (view) => {
   const backButton = document.querySelector('.back-button');
   const topTitle = document.getElementById('top-title');
   const newMessageButton = document.getElementById('new-message-button');
+  const tabBar = document.getElementById('tab-bar');
+  const content = document.querySelector('.content');
+  const showTabBar = view === 'list';
 
   if (view === 'list') {
-    topTitle.textContent = 'Messages';
+    topTitle.textContent = tabLabels[activeTab] || 'Messages';
     backButton?.classList.add('hidden');
   } else {
     topTitle.textContent = currentConversation?.name ?? 'Thread';
@@ -278,6 +303,12 @@ const setView = (view) => {
   } else {
     newMessageButton?.classList.remove('hidden');
   }
+
+  if (tabBar) {
+    tabBar.classList.toggle('hidden', !showTabBar);
+    tabBar.setAttribute('aria-hidden', showTabBar ? 'false' : 'true');
+  }
+  content?.classList.toggle('has-tabbar', showTabBar);
 };
 
 const buildTileHTML = (group, messageId, index) => {
@@ -585,6 +616,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendButtonThread = document.getElementById('send-reply-button-thread');
   const inputThread = document.getElementById('reply-input-thread');
   const emojiPicker = document.getElementById('emoji-picker');
+  const tabButtons = document.querySelectorAll('.tab-item');
+  const newTabButton = document.getElementById('tab-new-button');
 
   container?.addEventListener('click', (event) => {
     const article = event.target.closest('.conversation');
@@ -657,4 +690,25 @@ document.addEventListener('DOMContentLoaded', () => {
       handleEmojiReaction(val);
     }
   });
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab || 'loops';
+      setActiveTab(tab);
+      showList();
+    });
+  });
+
+  newTabButton?.addEventListener('click', () => {
+    setActiveTab('loops');
+    showList();
+    const newMessageButton = document.getElementById('new-message-button');
+    if (newMessageButton) {
+      newMessageButton.classList.add('pulse');
+      setTimeout(() => newMessageButton.classList.remove('pulse'), 650);
+    }
+  });
+
+  setActiveTab(activeTab);
+  setView('list');
 });
