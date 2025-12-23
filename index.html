@@ -1,0 +1,84 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-bar">
+      <button class="icon-button back-button hidden" aria-label="Back to list">←</button>
+      <h1 class="title" id="top-title">Messages</h1>
+      <button class="icon-button" id="new-message-button" aria-label="New message">＋</button>
+    </header>
+
+    <main class="content">
+      <section id="list-screen" class="view">
+        <div id="conversation-list" class="conversation-list" role="list"></div>
+      </section>
+
+      <section id="thread-screen" class="view hidden" aria-live="polite">
+        <div class="thread-header">
+          <p class="section-label">Group</p>
+          <h2 class="thread-name" id="contact-name">Alex Carter</h2>
+        </div>
+
+        <div class="thread-feed" id="thread-feed"></div>
+
+        <div class="composer thread-composer">
+          <div class="composer-field">
+            <input id="reply-input-thread" type="text" placeholder="Reply to the conversation..." />
+          </div>
+          <button class="send-button" id="send-reply-button-thread" aria-label="Send reply">Send</button>
+        </div>
+      </section>
+
+      <section id="media-screen" class="view hidden" aria-live="polite">
+        <div class="thread-header media-header">
+          <p class="section-label">Post</p>
+          <div class="media-contact">
+            <div class="avatar" id="media-contact-avatar">AC</div>
+            <h2 class="thread-name" id="media-contact-name">Alex Carter</h2>
+          </div>
+        </div>
+
+        <div class="media-carousel" id="media-carousel"></div>
+
+        <div class="emoji-picker" id="emoji-picker">
+          <button class="emoji-btn" data-emoji="👍">👍</button>
+          <button class="emoji-btn" data-emoji="🔥">🔥</button>
+          <button class="emoji-btn" data-emoji="😂">😂</button>
+          <button class="emoji-btn" data-emoji="👏">👏</button>
+          <button class="emoji-btn" data-emoji="😍">😍</button>
+          <button class="emoji-btn add-emoji" data-emoji="+">＋</button>
+        </div>
+
+        <section class="summary-block media-summary">
+          <p class="section-label">My Week</p>
+          <ul class="summary-list" id="summary-bullets-media"></ul>
+        </section>
+
+        <section class="replies-block">
+          <p class="section-label">Replies</p>
+          <div id="replies-list-media" class="replies-list"></div>
+        </section>
+
+        <div class="composer" id="composer">
+          <div class="composer-field">
+            <input id="reply-input" type="text" placeholder="Reply to the conversation..." />
+          </div>
+          <button class="send-button" id="send-reply-button" aria-label="Send reply">Send</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
