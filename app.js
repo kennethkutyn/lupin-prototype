@@ -46,7 +46,6 @@ const threadGroups = [
         avatar: '#60a5fa',
         text: 'Agree with Sam, a subtle LUT bump should do it.',
         time: '12:07',
-        replyTo: 'r2',
       },
       {
         id: 'r4',
@@ -61,7 +60,6 @@ const threadGroups = [
         avatar: '#facc15',
         text: 'Awww thanks for sharing!! <3',
         time: '12:12',
-        replyTo: 'r4',
         emoji: '✅',
       },
     ],
@@ -175,7 +173,6 @@ const renderPhotos = (photos = [], targetId = 'photos-grid') => {
 const renderReplies = (
   replies = [],
   targetId = 'replies-list',
-  includeReplyAction = false,
   latestOnly = false
 ) => {
   const container = document.getElementById(targetId);
@@ -197,29 +194,11 @@ const renderReplies = (
 
   const sourceReplies = latestReply ? [latestReply] : replies;
 
-  const childCount = sourceReplies.reduce((acc, reply) => {
-    if (reply.replyTo) {
-      acc[reply.replyTo] = (acc[reply.replyTo] || 0) + 1;
-    }
-    return acc;
-  }, {});
-
-  const lookup = sourceReplies.reduce((acc, reply) => {
-    acc[reply.id] = reply;
-    return acc;
-  }, {});
-
   const rows = sourceReplies.map((reply) => {
-    const parent = reply.replyTo ? lookup[reply.replyTo] : null;
-    const replyClass = parent ? 'reply nested' : 'reply';
     const emoji = reply.emoji ? `<span class="emoji">${reply.emoji}</span>` : '';
-    const hasChildren = (childCount[reply.id] || 0) > 0;
-    const actions = includeReplyAction && !hasChildren
-      ? `<div class="reply-actions"><button class="reply-button" data-reply-id="${reply.id}">Reply</button></div>`
-      : '';
 
     return `
-      <div class="${replyClass}">
+      <div class="reply">
         <div class="avatar-sm" style="background:${reply.avatar}">${initials(
       reply.author
     )}</div>
@@ -232,7 +211,6 @@ const renderReplies = (
             <span>${reply.text}</span>
             ${emoji}
           </div>
-          ${actions}
         </div>
       </div>
     `;
@@ -385,7 +363,7 @@ const renderThreadFeed = () => {
     const group = threadGroups.find((g) => g.id === message.groupId);
     if (!group) return;
     renderPhotos(group.photos, `photos-${message.id}`);
-    renderReplies(group.replies, `replies-${message.id}`, false, true);
+      renderReplies(group.replies, `replies-${message.id}`, true);
   });
 };
 
@@ -463,7 +441,7 @@ const showMedia = () => {
   }
 
   renderMediaCarousel();
-  renderReplies(currentThreadGroup.replies, 'replies-list-media', true);
+  renderReplies(currentThreadGroup.replies, 'replies-list-media');
   renderSummaryPoints(currentThreadGroup.summaryPoints, 'summary-bullets-media');
   renderReactionMarkers();
 
@@ -486,7 +464,6 @@ const showMedia = () => {
   }
 };
 
-let replyTargetId = null;
 let reactionMarks = [];
 
 const renderReactionMarkers = () => {
@@ -569,7 +546,6 @@ const sendReply = (inputOrEvent = 'reply-input') => {
       text,
     });
     input.value = '';
-    replyTargetId = null;
     input.placeholder = 'Reply to the conversation...';
     renderThreadFeed();
     return;
@@ -582,25 +558,14 @@ const sendReply = (inputOrEvent = 'reply-input') => {
     text,
     time: 'Now',
     createdAt: Date.now(),
-    replyTo: replyTargetId || undefined,
   };
 
   const replies = currentThreadGroup.replies;
-  if (replyTargetId) {
-    const parentIndex = replies.findIndex((r) => r.id === replyTargetId);
-    if (parentIndex >= 0) {
-      replies.splice(parentIndex + 1, 0, newReply);
-    } else {
-      replies.push(newReply);
-    }
-  } else {
-    replies.push(newReply);
-  }
+  replies.push(newReply);
   input.value = '';
-  replyTargetId = null;
   input.placeholder = 'Reply to the conversation...';
 
-  renderReplies(currentThreadGroup.replies, 'replies-list-media', true);
+  renderReplies(currentThreadGroup.replies, 'replies-list-media');
   renderThreadFeed();
 };
 
@@ -610,7 +575,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('conversation-list');
   const backButton = document.querySelector('.back-button');
   const threadFeed = document.getElementById('thread-feed');
-  const repliesMedia = document.getElementById('replies-list-media');
   const sendButton = document.getElementById('send-reply-button');
   const input = document.getElementById('reply-input');
   const sendButtonThread = document.getElementById('send-reply-button-thread');
@@ -645,19 +609,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (group) {
       currentThreadGroup = group;
       showMedia();
-    }
-  });
-
-  repliesMedia?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.reply-button');
-    if (!btn) return;
-    replyTargetId = btn.dataset.replyId || null;
-    if (input) {
-      const targetReply = currentThreadGroup.replies.find((r) => r.id === replyTargetId);
-      input.focus();
-      input.placeholder = targetReply
-        ? `Replying to ${targetReply.author}...`
-        : 'Reply to the conversation...';
     }
   });
 

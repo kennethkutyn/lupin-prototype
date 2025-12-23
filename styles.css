@@ -433,21 +433,6 @@ body {
   gap: 10px;
 }
 
-.reply.nested {
-  margin-left: 40px;
-  position: relative;
-}
-
-.reply.nested::before {
-  content: '';
-  position: absolute;
-  left: -22px;
-  top: 14px;
-  width: 16px;
-  height: 1px;
-  background: var(--divider);
-}
-
 .avatar-sm {
   width: 32px;
   height: 32px;
@@ -680,26 +665,6 @@ body {
   box-shadow: 0 10px 20px rgba(34, 211, 238, 0.25);
 }
 
-.reply-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.reply-button {
-  border: 1px solid var(--divider);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
-  border-radius: 10px;
-  padding: 6px 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.reply-button:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.08);
-}
 
 .tab-bar {
   position: absolute;
